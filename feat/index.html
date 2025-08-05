@@ -6,7 +6,7 @@
     <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
     <title>
       
-        比赛&靶场 | Hexo
+        比赛&靶场 | 静随本心
       
     </title>
     <meta name="description" content=""/>
@@ -142,7 +142,7 @@
     </div>
     <div class="body">
       
-  <div class="wall wall-category--plain">
+  <div class="wall wall-category">
     <div class="wall-main">
       <div class="wall-category-title">
         <div class="title-icon"
@@ -151,7 +151,7 @@
       </div>
       <div class="wall-category-description">比赛&靶场wp及复现</div>
       <div class="wall-category-tags">
-        <div id="tags-outer"><a href="/tags/ssh%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/" style="font-size: 1em;">ssh日志分析</a> <a href="/tags/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/" style="font-size: 1em;">应急响应</a></div>
+        <div id="tags-outer"><canvas width="500" height="500" id="tagCanvas"><a href="/tags/ssh%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/" style="font-size: 14px;">ssh日志分析</a> <a href="/tags/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/" style="font-size: 14px;">应急响应</a><canvas></div>
       </div>
     </div>
   </div>
@@ -353,7 +353,7 @@
       </div>
     </div>
     <div class="copyright">
-      <a href="https://shen9nAn.github.io">Hexo</a> &nbsp;|&nbsp;由&nbsp;<a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>&nbsp;及&nbsp;
+      <a href="https://shen9nAn.github.io">静随本心</a> &nbsp;|&nbsp;由&nbsp;<a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>&nbsp;及&nbsp;
       <svg width="20" height="20" viewBox="0 0 725 725">
         <path fill-rule="evenodd" fill="rgb(221, 221, 221)" d="M145.870,236.632 L396.955,103.578 L431.292,419.44 L156.600,522.53 L145.870,236.632 Z" />
         <path fill-rule="evenodd" fill="rgb(159, 159, 159)" d="M396.955,103.578 L564.345,234.486 L611.558,513.469 L431.292,419.44 L396.955,103.578 Z" />
@@ -373,6 +373,35 @@
     
     <script src="/js/copy-code.js"></script>
     
+  
+    <script type="text/javascript"
+            charset="utf-8"
+            src="/js/tagcanvas.min.js"></script>
+    <script type = "text/javascript">
+        window.onload = function() {
+            try {
+                TagCanvas.Start('tagCanvas', '', {
+                    outlineThickness: 1,
+                    maxSpeed: 0.03,
+                    // freezeActive: true,
+                    // freezeDecel: true,
+                    textColour: null,
+                    textColour: null,
+                    outlineColour: "#aaa",
+                    weight: true,
+                    padding: 4,
+                    // clickToFront: 200,
+                    fadIn: 200,
+                    // pinchZoom: true,
+                    wheelZoom: false,
+                    initial: [0.1, -0.03]
+                });
+            } catch (e) {
+                // something went wrong, hide the canvas container
+                document.getElementById('tags-outer').style.display = 'none';
+            }
+        };
+    </script>
   
 
   </body>
